@@ -73,16 +73,10 @@ open class TableSection: Equatable, Copying, DifferentiableSection {
 	// MARK: - DifferentiableSection Conformance -
 
 	public func isContentEqual(to other: Differentiable) -> Bool {
-		guard let other = other as? TableSection,
-			elements.count == other.elements.count else {
-				return false
-		}
-		for item in elements.enumerated() {
-			if item.element.isContentEqual(to: other.elements[item.offset]) == false {
-				return false
-			}
-		}
-		return true
+    guard let other = other as? TableSection else {
+      return false
+    }
+    return self.identifier == other.identifier
 	}
 
 	public var differenceIdentifier: String {
