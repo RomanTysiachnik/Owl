@@ -411,7 +411,7 @@ public extension CollectionDirector {
 
 	func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
 		let (model, adapter) = context(forItemAt: indexPath)
-		return (adapter.dispatchEvent(.didDeselect, model: model, cell: nil, path: indexPath, params: nil) as? Bool) ?? true
+		return (adapter.dispatchEvent(.shouldSelect, model: model, cell: nil, path: indexPath, params: nil) as? Bool) ?? true
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -435,7 +435,7 @@ public extension CollectionDirector {
 
 	func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
 		let (model, adapter) = context(forItemAt: indexPath)
-		return (adapter.dispatchEvent(.didDeselect, model: model, cell: nil, path: indexPath, params: nil) as? Bool) ?? true
+		return (adapter.dispatchEvent(.shouldHighlight, model: model, cell: nil, path: indexPath, params: nil) as? Bool) ?? true
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
