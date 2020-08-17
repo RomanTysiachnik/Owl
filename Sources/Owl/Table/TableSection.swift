@@ -72,20 +72,28 @@ open class TableSection: Equatable, Copying, DifferentiableSection {
 
 	// MARK: - DifferentiableSection Conformance -
 
-	public func isContentEqual(to other: Differentiable) -> Bool {
-    guard let other = other as? TableSection else {
-      return false
-    }
-    return self.identifier == other.identifier
-	}
-
-	public var differenceIdentifier: String {
-		return self.identifier
-	}
-
-	public static func == (lhs: TableSection, rhs: TableSection) -> Bool {
-		return lhs.identifier == rhs.identifier
-	}
+  public func isContentEqual(to other: Differentiable) -> Bool {
+      guard let other = other as? TableSection else {
+        return false
+      }
+      return self.identifier == other.identifier
+  }
+  
+  public var differenceIdentifier: String {
+      return self.identifier
+  }
+  
+  public static func == (lhs: TableSection, rhs: TableSection) -> Bool {
+      guard lhs.identifier == rhs.identifier, lhs.elements.count == rhs.elements.count else {
+        return false
+      }
+      for item in lhs.elements.enumerated() {
+        if item.element.isContentEqual(to: rhs.elements[item.offset]) == false {
+          return false
+        }
+      }
+      return true
+  }
 
 	// MARK: - Initialization -
 
