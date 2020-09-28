@@ -713,6 +713,12 @@ extension TableDirector: UITableViewDataSource, UITableViewDelegate {
         }
         let _ = adapter.dispatchEvent(.endDisplay, model: nil, cell: cell, path: indexPath, params: nil)
 	}
+  
+  @available(iOS 13.0, *)
+  public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    let (model, adapter) = context(forItemAt: indexPath)
+    return adapter.dispatchEvent(.contextMenuConfiguration, model: model, cell: nil, path: indexPath, params: nil) as? UIContextMenuConfiguration
+  }
 
 	public func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
 		let (model, adapter) = context(forItemAt: indexPath)

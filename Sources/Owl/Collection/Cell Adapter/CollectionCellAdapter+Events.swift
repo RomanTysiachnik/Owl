@@ -78,6 +78,9 @@ public extension CollectionCellAdapter {
 		public var prefetch: ((_ items: [Model], _ paths: [IndexPath]) -> Void)? = nil
 		public var cancelPrefetch: ((_ items: [Model], _ paths: [IndexPath]) -> Void)? = nil
 		public var shouldSpringLoad: ((Event) -> Bool)? = nil
+    
+    @available(iOS 13, *)
+    public lazy var contextMenuConfiguration: ((Event) -> UIContextMenuConfiguration?)? = nil
 	}
 
 }
@@ -103,4 +106,5 @@ public enum CollectionAdapterEventID: Int {
 	case prefetch
 	case cancelPrefetch
 	case shouldSpringLoad
+  case contextMenuConfiguration
 }
