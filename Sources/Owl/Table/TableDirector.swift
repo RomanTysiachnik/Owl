@@ -35,6 +35,9 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
 
 	/// Managed `UITableView` instance, not retained.
 	public private(set) weak var table: UITableView?
+  
+  /// Events subscriber
+  public var events = TableDirector.TableEventsHandler()
 
 	/// Events related to the behaviour of the table.
 	public var scrollViewEvents = ScrollViewEventsHandler()
@@ -718,6 +721,11 @@ extension TableDirector: UITableViewDataSource, UITableViewDelegate {
   public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
     let (model, adapter) = context(forItemAt: indexPath)
     return adapter.dispatchEvent(.contextMenuConfiguration, model: model, cell: nil, path: indexPath, params: nil) as? UIContextMenuConfiguration
+  }
+  
+  @available(iOS 13.0, *)
+  public func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    return events.contextMenuPreview?(configuration)
   }
 
 	public func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
