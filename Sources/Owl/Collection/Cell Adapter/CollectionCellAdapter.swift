@@ -132,6 +132,10 @@ open class CollectionCellAdapter<Model: ElementRepresentable, Cell: ReusableView
 		case .shouldSpringLoad:
 			return events.shouldSpringLoad?(CollectionCellAdapter.Event(element: model, cell: cell, path: path))
 			
+    case .contextMenuConfiguration:
+      if #available(iOS 13, *) {
+        return events.contextMenuConfiguration?(CollectionCellAdapter.Event(element: model, cell: cell, path: path))
+      }
 		}
 
 		return nil

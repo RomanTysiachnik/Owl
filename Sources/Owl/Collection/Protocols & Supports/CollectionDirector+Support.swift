@@ -29,7 +29,7 @@ public extension CollectionDirector {
 
 
 	// MARK: - Public Supporting Structures -
-
+  
 	struct EventsSubscriber {
 		typealias HeaderFooterEvent = (view: UICollectionReusableView, path: IndexPath, table: UICollectionView)
 
@@ -56,6 +56,13 @@ public extension CollectionDirector {
 
 		var endDisplayHeader : ((HeaderFooterEvent) -> Void)? = nil
 		var endDisplayFooter : ((HeaderFooterEvent) -> Void)? = nil
+    
+    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
+    @available(iOS 13.0, *)
+    var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? {
+      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? ?? nil }
+      set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
+    }
 	}
 
 	internal class PrefetchModelsGroup {

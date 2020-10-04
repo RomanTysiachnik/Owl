@@ -120,6 +120,9 @@ public extension TableCellAdapter {
 
 		@available(iOS 11, *)
 		public lazy var trailingSwipeActions: ((Event) -> UISwipeActionsConfiguration?)? = nil
+    
+    @available(iOS 13, *)
+    public lazy var contextMenuConfiguration: ((Event) -> UIContextMenuConfiguration?)? = nil
 	}
 }
 
@@ -162,4 +165,5 @@ public enum TableAdapterEventID: Int {
 	case canFocus
 	case leadingSwipeActions
 	case trailingSwipeActions
+  case contextMenuConfiguration
 }

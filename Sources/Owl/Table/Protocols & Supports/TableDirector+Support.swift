@@ -40,6 +40,12 @@ public extension TableDirector {
 
 		var didChangeAdjustedContentInset: ((UIScrollView) -> Void)? = nil
 		
+    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
+    @available(iOS 13.0, *)
+    var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? {
+      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? ?? nil }
+      set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
+    }
 	}
 
 	/// Height of the row

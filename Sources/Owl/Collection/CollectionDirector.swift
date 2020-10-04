@@ -477,6 +477,17 @@ public extension CollectionDirector {
 		let (model, adapter) = context(forItemAt: indexPath)
 		return (adapter.dispatchEvent(.shouldShowEditMenu, model: model, cell: nil, path: indexPath, params: nil) as? Bool) ?? false
 	}
+  
+  @available(iOS 13.0, *)
+  func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    let (model, adapter) = context(forItemAt: indexPath)
+    return adapter.dispatchEvent(.contextMenuConfiguration, model: model, cell: nil, path: indexPath, params: nil) as? UIContextMenuConfiguration
+  }
+  
+  @available(iOS 13.0, *)
+  func collectionView(_ collectionView: UICollectionView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    return events.contextMenuPreview?(configuration)
+  }
 
 	// MARK: - Actions -
 

@@ -197,6 +197,11 @@ open class TableCellAdapter<Model: ElementRepresentable, Cell: ReusableViewProto
 			if #available(iOS 11, *) {
 				return events.trailingSwipeActions?(TableCellAdapter.Event(item: model, cell: cell, indexPath: path))
 			}
+      
+    case .contextMenuConfiguration:
+      if #available(iOS 13, *) {
+        return events.contextMenuConfiguration?(TableCellAdapter.Event(item: model, cell: cell, indexPath: path))
+      }
 
 		}
 
