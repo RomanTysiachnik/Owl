@@ -17,33 +17,11 @@ import UIKit
 public extension TableDirector {
 
 	/// Events you can monitor from the director and related to the table
-	struct TableEventsHandler {
-
-		var didScroll: ((UIScrollView) -> Void)? = nil
-		var endScrollingAnimation: ((UIScrollView) -> Void)? = nil
-
-		var shouldScrollToTop: ((UIScrollView) -> Bool)? = nil
-		var didScrollToTop: ((UIScrollView) -> Void)? = nil
-
-		var willBeginDragging: ((UIScrollView) -> Void)? = nil
-		var willEndDragging: ((_ scrollView: UIScrollView, _ velocity: CGPoint, _ targetOffset: UnsafeMutablePointer<CGPoint>) -> Void)? = nil
-		var endDragging: ((_ scrollView: UIScrollView, _ willDecelerate: Bool) -> Void)? = nil
-
-		var willBeginDecelerating: ((UIScrollView) -> Void)? = nil
-		var endDecelerating: ((UIScrollView) -> Void)? = nil
-
-		// zoom
-		var viewForZooming: ((UIScrollView) -> UIView?)? = nil
-		var willBeginZooming: ((_ scrollView: UIScrollView, _ view: UIView?) -> Void)? = nil
-		var endZooming: ((_ scrollView: UIScrollView, _ view: UIView?, _ scale: CGFloat) -> Void)? = nil
-		var didZoom: ((UIScrollView) -> Void)? = nil
-
-		var didChangeAdjustedContentInset: ((UIScrollView) -> Void)? = nil
-		
+	struct TableEventsHandler {		
     private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
     @available(iOS 13.0, *)
-    var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? {
-      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? ?? nil }
+    public var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? {
+      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? ?? nil }
       set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
     }
 	}

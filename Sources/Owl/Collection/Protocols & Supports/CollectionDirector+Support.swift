@@ -33,34 +33,28 @@ public extension CollectionDirector {
 	struct EventsSubscriber {
 		typealias HeaderFooterEvent = (view: UICollectionReusableView, path: IndexPath, table: UICollectionView)
 
-		var layoutDidChange: ((_ old: UICollectionViewLayout, _ new: UICollectionViewLayout) -> UICollectionViewTransitionLayout?)? = nil
-		var targetOffset: ((_ proposedContentOffset: CGPoint) -> CGPoint)? = nil
-		var moveItemPath: ((_ originalIndexPath: IndexPath, _ proposedIndexPath: IndexPath) -> IndexPath)? = nil
+		public var layoutDidChange: ((_ old: UICollectionViewLayout, _ new: UICollectionViewLayout) -> UICollectionViewTransitionLayout?)? = nil
+    public var targetOffset: ((_ proposedContentOffset: CGPoint) -> CGPoint)? = nil
+    public var moveItemPath: ((_ originalIndexPath: IndexPath, _ proposedIndexPath: IndexPath) -> IndexPath)? = nil
 
 		private var _shouldUpdateFocus: ((_ context: AnyObject) -> Bool)? = nil
 		@available(iOS 9.0, *)
-		var shouldUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext) -> Bool)? {
+    public var shouldUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext) -> Bool)? {
 			get { return _shouldUpdateFocus }
 			set { _shouldUpdateFocus = newValue as? ((AnyObject) -> Bool) }
 		}
 
 		private var _didUpdateFocus: ((_ context: AnyObject, _ coordinator: AnyObject) -> Void)? = nil
 		@available(iOS 9.0, *)
-		var didUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext, _ coordinator: UIFocusAnimationCoordinator) -> Void)? {
+    public var didUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext, _ coordinator: UIFocusAnimationCoordinator) -> Void)? {
 			get { return _didUpdateFocus }
 			set { _didUpdateFocus = newValue as? ((AnyObject, AnyObject) -> Void) }
 		}
-
-		var willDisplayHeader : ((HeaderFooterEvent) -> Void)? = nil
-		var willDisplayFooter : ((HeaderFooterEvent) -> Void)? = nil
-
-		var endDisplayHeader : ((HeaderFooterEvent) -> Void)? = nil
-		var endDisplayFooter : ((HeaderFooterEvent) -> Void)? = nil
     
     private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
     @available(iOS 13.0, *)
-    var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? {
-      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview)? ?? nil }
+    public var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? {
+      get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? ?? nil }
       set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
     }
 	}
