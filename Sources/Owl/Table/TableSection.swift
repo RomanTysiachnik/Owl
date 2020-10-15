@@ -17,7 +17,7 @@ open class TableSection: Equatable, Copying, DifferentiableSection {
 	// MARK: - Public Properties -
 
     /// Parent director. Section cannot be used in more of than one director.
-    internal weak var director: TableDirector?
+    public internal(set) weak var director: TableDirector?
     
     /// Return the index of the section into the parent director.
     public var index: Int? {

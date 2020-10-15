@@ -16,7 +16,7 @@ import UIKit
 open class CollectionSection: Equatable, Copying, DifferentiableSection {
 
     /// Parent director. Section cannot be used in more of than one director.
-    internal weak var director: CollectionDirector?
+    public internal(set) weak var director: CollectionDirector?
     
     /// Return the index of the section into the parent director.
     public var index: Int? {
