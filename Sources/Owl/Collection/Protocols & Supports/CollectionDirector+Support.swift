@@ -41,21 +41,33 @@ public extension CollectionDirector {
 		@available(iOS 9.0, *)
     public var shouldUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext) -> Bool)? {
 			get { return _shouldUpdateFocus }
-			set { _shouldUpdateFocus = newValue as? ((AnyObject) -> Bool) }
+			set {
+        if let shouldUpdateFocus = newValue as? ((AnyObject) -> Bool)? {
+          _shouldUpdateFocus = shouldUpdateFocus
+        }
+      }
 		}
 
 		private var _didUpdateFocus: ((_ context: AnyObject, _ coordinator: AnyObject) -> Void)? = nil
 		@available(iOS 9.0, *)
     public var didUpdateFocus: ((_ context: UICollectionViewFocusUpdateContext, _ coordinator: UIFocusAnimationCoordinator) -> Void)? {
-			get { return _didUpdateFocus }
-			set { _didUpdateFocus = newValue as? ((AnyObject, AnyObject) -> Void) }
+			get { _didUpdateFocus }
+			set {
+        if let didUpdateFocus = newValue as? ((AnyObject, AnyObject) -> Void)? {
+          _didUpdateFocus = didUpdateFocus
+        }
+      }
 		}
     
-    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
+    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject?)? = nil
     @available(iOS 13.0, *)
     public var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? {
       get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? ?? nil }
-      set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
+      set {
+        if let contextMenuPreview = newValue as? ((AnyObject) -> AnyObject?)? {
+          _contextMenuPreview = contextMenuPreview
+        }
+      }
     }
 	}
 
