@@ -309,6 +309,8 @@ open class CollectionDirector: NSObject,
 	
 	// MARK: - Reload -
 	
+    private let changesetQueue = DispatchQueue(label: "com.OwlKit.changeset.collection")
+    
 	public func reload(afterUpdate update: ((CollectionDirector) -> Void)? = nil,
 					   completion: (() -> Void)? = nil) {
 		guard let update = update else {
@@ -320,22 +322,22 @@ open class CollectionDirector: NSObject,
 		
 		let oldSections = self.sections.map { $0.copy() }
 		update(self)
-		let changeset = StagedChangeset(source: oldSections, target: sections)
-		
-		collection?.reload(using: changeset, setData: {
-			self.sections = $0
-		})
         
-        if let completion = completion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                completion()
-            }
-        }
-        
-        isInReloadSession = false
-        if let completion = completion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                completion()
+        changesetQueue.async { [weak self] in
+            guard let self = self else { return }
+            let changeset = StagedChangeset(source: oldSections, target: self.sections)
+            
+            DispatchQueue.main.async {
+                self.collection?.reload(using: changeset, setData: { collection in
+                    self.sections = collection
+                })
+                self.isInReloadSession = false
+                
+                if let completion = completion {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        completion()
+                    }
+                }
             }
         }
 	}

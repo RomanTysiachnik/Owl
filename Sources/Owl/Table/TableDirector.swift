@@ -361,6 +361,8 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
 	}
 	
 	// MARK: - Add Items -
+  
+  private let changesetQueue = DispatchQueue(label: "com.OwlKit.changeset.table")
 	
 	/// Append items at the bottom of section at specified index.
 	/// If section index is not specified a new section is created and append
@@ -399,31 +401,35 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
 	///					after a fixed time (0.25s).
 	public func reload(afterUpdate update: ((TableDirector) -> UITableView.RowAnimation)? = nil,
 					   completion: (() -> Void)? = nil) {
-		guard let update = update else {
-			table?.reloadData()
-			return
-		}
-		
+        guard let update = update else {
+            table?.reloadData()
+            return
+        }
+        
         isInReloadSession = true
-		
+        
         let oldSections = self.sections.map { $0.copy() }
-		let rowAnimation = update(self)
-		let changeset = StagedChangeset(source: oldSections, target: sections)
-		
-		table?.reload(using: changeset, with: rowAnimation, interrupt: { (changset) -> Bool in
-			return false
-		}, setData: { collection in
-			sections = collection
-		})
-        
-        isInReloadSession = false
-        
-        if let completion = completion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                completion()
+        let rowAnimation = update(self)
+        changesetQueue.async { [weak self] in
+            guard let self = self else { return }
+            let changeset = StagedChangeset(source: oldSections, target: self.sections)
+            
+            DispatchQueue.main.async {
+                self.table?.reload(using: changeset, with: rowAnimation, interrupt: { (changset) -> Bool in
+                    return false
+                }, setData: { collection in
+                    self.sections = collection
+                })
+                self.isInReloadSession = false
+                
+                if let completion = completion {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        completion()
+                    }
+                }
             }
         }
-	}
+    }
 	
 	// MARK: - Private Functions -
 
