@@ -18,13 +18,17 @@ public extension TableDirector {
 
 	/// Events you can monitor from the director and related to the table
 	struct TableEventsHandler {		
-    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject)? = nil
+    private var _contextMenuPreview: ((_ context: AnyObject) -> AnyObject?)? = nil
     @available(iOS 13.0, *)
     public var contextMenuPreview: ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? {
       get { _contextMenuPreview as? ((_ context: UIContextMenuConfiguration) -> UITargetedPreview?)? ?? nil }
-      set { _contextMenuPreview = newValue as? ((AnyObject) -> AnyObject) }
+      set {
+        if let contextMenuPreview = newValue as? ((AnyObject) -> AnyObject?)? {
+          _contextMenuPreview = contextMenuPreview
+        }
+      }
     }
-	}
+  }
 
 	/// Height of the row
 	///
