@@ -415,11 +415,79 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
             let changeset = StagedChangeset(source: oldSections, target: self.sections)
             
             DispatchQueue.main.async {
-                self.table?.reload(using: changeset, with: rowAnimation, interrupt: { (changset) -> Bool in
+                self.table?.reload(using: changeset, with: rowAnimation, interrupt: { _ -> Bool in
                     return false
                 }, setData: { collection in
                     self.sections = collection
                 })
+                self.isInReloadSession = false
+                
+                if let completion = completion {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    /// Request for table contents reload using separate types of animation.
+    /// This call must executed in the main thread in order to avoid weird stuff.
+    ///
+    /// - Parameters:
+    ///   - update: this callback can be used to perform changes in your table's data (both from
+    ///                section and section's items perspective). At the end of the execution a
+    ///                fast diff is made automatically to get the differences before/after and perform
+    ///             an optional automatic animation.
+    ///                You must to return the animation to be performed at the end of the reload.
+    ///   - deleteSectionsAnimation: An option to animate the section deletion.
+    ///   - insertSectionsAnimation: An option to animate the section insertion.
+    ///   - reloadSectionsAnimation: An option to animate the section reload.
+    ///   - deleteRowsAnimation: An option to animate the row deletion.
+    ///   - insertRowsAnimation: An option to animate the row insertion.
+    ///   - reloadRowsAnimation: An option to animate the row reload.
+    ///   - completion: completion is called at the end of the reload. In fact there is not an event
+    ///                    which indicates the end of the reload, so the method is called automatically
+    ///                    after a fixed time (0.25s).
+    public func reload(
+        afterUpdate update: ((TableDirector) -> Void)? = nil,
+        deleteSectionsAnimation: UITableView.RowAnimation = .automatic,
+        insertSectionsAnimation: UITableView.RowAnimation = .automatic,
+        reloadSectionsAnimation: UITableView.RowAnimation = .automatic,
+        deleteRowsAnimation: UITableView.RowAnimation = .automatic,
+        insertRowsAnimation: UITableView.RowAnimation = .automatic,
+        reloadRowsAnimation: UITableView.RowAnimation = .automatic,
+        completion: (() -> Void)? = nil
+    ) {
+        guard let update = update else {
+            table?.reloadData()
+            return
+        }
+        
+        isInReloadSession = true
+        
+        let oldSections = self.sections.map { $0.copy() }
+        update(self)
+        
+        changesetQueue.async { [weak self] in
+            guard let self = self else { return }
+            let changeset = StagedChangeset(source: oldSections, target: self.sections)
+            
+            DispatchQueue.main.async {
+                self.table?.reload(
+                    using: changeset,
+                    deleteSectionsAnimation: deleteSectionsAnimation,
+                    insertSectionsAnimation: insertSectionsAnimation,
+                    reloadSectionsAnimation: reloadSectionsAnimation,
+                    deleteRowsAnimation: deleteRowsAnimation,
+                    insertRowsAnimation: insertRowsAnimation,
+                    reloadRowsAnimation: reloadRowsAnimation,
+                    interrupt: { _ -> Bool in
+                        return false
+                    }, setData: { collection in
+                        self.sections = collection
+                    })
                 self.isInReloadSession = false
                 
                 if let completion = completion {
