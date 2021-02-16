@@ -30,6 +30,11 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
     
     /// Is in reload session operation.
     private var isInReloadSession: Bool = false
+
+    typealias Operation = (TableDirector) -> Void
+
+    private var operationQueue = Queue<Operation>()
+
     
 	// MARK: - Public Properties -
 
@@ -405,6 +410,11 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
             table?.reloadData()
             return
         }
+
+        if isInReloadSession {
+            operationQueue.enqueue({ _ = update($0) })
+            return
+        }
         
         isInReloadSession = true
         
@@ -420,11 +430,16 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
                 }, setData: { collection in
                     self.sections = collection
                 })
-                self.isInReloadSession = false
-                
-                if let completion = completion {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                        completion()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    self.isInReloadSession = false
+                    completion?()
+                    if !self.operationQueue.isEmpty {
+                        let operations = self.operationQueue.dequeueAll()
+                        self.reload { director in
+                            operations.forEach { $0(director) }
+                            return .automatic
+                        }
                     }
                 }
             }
@@ -464,6 +479,11 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
             table?.reloadData()
             return
         }
+
+        if isInReloadSession {
+            operationQueue.enqueue(update)
+            return
+        }
         
         isInReloadSession = true
         
@@ -488,11 +508,23 @@ open class TableDirector: NSObject, UITableViewDataSourcePrefetching {
                     }, setData: { collection in
                         self.sections = collection
                     })
-                self.isInReloadSession = false
-                
-                if let completion = completion {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                        completion()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    self.isInReloadSession = false
+                    completion?()
+                    if !self.operationQueue.isEmpty {
+                        let operations = self.operationQueue.dequeueAll()
+                        let afterUpdate: (TableDirector) -> Void = { director in operations.forEach { $0(director) } }
+                        self.reload(
+                            afterUpdate: afterUpdate,
+                            deleteSectionsAnimation: deleteSectionsAnimation,
+                            insertSectionsAnimation: insertSectionsAnimation,
+                            reloadSectionsAnimation: reloadSectionsAnimation,
+                            deleteRowsAnimation: deleteRowsAnimation,
+                            insertRowsAnimation: insertRowsAnimation,
+                            reloadRowsAnimation: reloadRowsAnimation,
+                            completion: nil
+                        )
                     }
                 }
             }
