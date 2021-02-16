@@ -636,15 +636,15 @@ extension TableDirector: UITableViewDataSource, UITableViewDelegate {
 	}
 
 	public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return sections[section].headerTitle
+		return sectionAt(section)?.headerTitle
 	}
 
 	public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		return sections[section].footerTitle
+		return sectionAt(section)?.footerTitle
 	}
 
 	public func tableView(_ tableView: UITableView, viewForHeaderInSection sectionIdx: Int) -> UIView? {
-        guard let header = sections[sectionIdx].headerView, let headerView = header.dequeueHeaderFooterForDirector(self) else {
+        guard let header = sectionAt(sectionIdx)?.headerView, let headerView = header.dequeueHeaderFooterForDirector(self) else {
             return nil
         }
 		header.dispatch(.dequeue, isHeader: false, view: headerView, section: sectionIdx)
@@ -652,7 +652,7 @@ extension TableDirector: UITableViewDataSource, UITableViewDelegate {
 	}
 
 	public func tableView(_ tableView: UITableView, viewForFooterInSection sectionIdx: Int) -> UIView? {
-        guard let footer = sections[sectionIdx].footerView, let footerView = footer.dequeueHeaderFooterForDirector(self) else {
+        guard let footer = sectionAt(sectionIdx)?.footerView, let footerView = footer.dequeueHeaderFooterForDirector(self) else {
             return nil
         }
 		footer.dispatch(.dequeue, isHeader: false, view: footerView, section: sectionIdx)
@@ -660,28 +660,28 @@ extension TableDirector: UITableViewDataSource, UITableViewDelegate {
 	}
 
 	public func tableView(_ tableView: UITableView, heightForHeaderInSection index: Int) -> CGFloat {
-		let height = sections[index].headerView?.dispatch(.headerHeight, isHeader: true, view: nil, section: index)
+		let height = sectionAt(index)?.headerView?.dispatch(.headerHeight, isHeader: true, view: nil, section: index)
 		return (height as? CGFloat ?? UITableView.automaticDimension)
 	}
 
 	public func tableView(_ tableView: UITableView, heightForFooterInSection index: Int) -> CGFloat {
-		let height = sections[index].footerView?.dispatch(.footerHeight, isHeader: true, view: nil, section: index)
+		let height = sectionAt(index)?.footerView?.dispatch(.footerHeight, isHeader: true, view: nil, section: index)
 		return (height as? CGFloat ?? UITableView.automaticDimension)
 	}
 
 	public func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection index: Int) -> CGFloat {
-		let estHeight = sections[index].headerView?.dispatch(.estHeaderHeight, isHeader: true, view: nil, section: index)
+		let estHeight = sectionAt(index)?.headerView?.dispatch(.estHeaderHeight, isHeader: true, view: nil, section: index)
 		guard let estimatedHeight = estHeight as? CGFloat else {
-            let height = sections[index].headerView?.dispatch(.headerHeight, isHeader: true, view: nil, section: index)
+            let height = sectionAt(index)?.headerView?.dispatch(.headerHeight, isHeader: true, view: nil, section: index)
             return height as? CGFloat ?? sections[index].unspecifiedHeaderHeight
 		}
 		return estimatedHeight
 	}
 
 	public func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection index: Int) -> CGFloat {
-		let estHeight = sections[index].footerView?.dispatch(.estFooterHeight, isHeader: true, view: nil, section: index)
+		let estHeight = sectionAt(index)?.footerView?.dispatch(.estFooterHeight, isHeader: true, view: nil, section: index)
 		guard let estimatedHeight = estHeight as? CGFloat else {
-			let height = sections[index].footerView?.dispatch(.footerHeight, isHeader: true, view: nil, section: index)
+			let height = sectionAt(index)?.footerView?.dispatch(.footerHeight, isHeader: true, view: nil, section: index)
             return height as? CGFloat ?? sections[index].unspecifiedFooterHeight
 		}
 		return estimatedHeight
